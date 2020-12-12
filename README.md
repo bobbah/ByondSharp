@@ -18,7 +18,7 @@ Once you have .NET 5.0 or greater runtimes, writing the code is pretty straight 
 At a bare minimum, exported functions must:
 - Have the ``ByondFFI`` attribute
 - Be ``public`` and ``static`` methods
-- Return ``void`` or ``string``
+- Return ``void``, ``string``, or when async return ``Task`` or ``Task<string>``
 - Have zero arguments, or have one argument which is a ``List<string>``
 
 Aside from that you're free to do as you please.
@@ -63,12 +63,9 @@ Knowing how to run it and the brief rules for writing code is not very useful wi
 
 Quite simple: in Visual Studio, you will build the ByondSharp project in debug or release configuration **for x86 CPUs** (BYOND is a 32-bit application, a 64-bit compiled DLL will not do much!)
 
-Once this is done, you will generate several files within your ``ByondSharp\bin\x86\[Debug/Release]\net5.0\win-x86`` directory, but there are only three you need to have in your BYOND directory:
-- ``ByondSharp.dll`` (this contains the proper .NET library code)
-- ``ByondSharpNE.dll`` (this contains the code to allow for native code to call our library)
-- ``ByondSharp.runtimeconfig.json`` (this is required for the runtime to initialize properly)
+Once this is done, you will generate several files within your ``ByondSharp\bin\x86\[Debug/Release]\net5.0\win-x86\copy_to_byond`` directory. Copy these to the location in which they will be referenced from BYOND. So long as no unanticipated files are generated during compilation (namely non-DLLs) then these should be the only files you require.
 
-All other files can be discarded, but these three __must__ be present in a directory that BYOND can access.
+All other files generated outside this folder can be discarded, but the aforementioned files __must__ be present in a directory that BYOND can access.
 
 ### Using in BYOND
 
@@ -90,4 +87,4 @@ To use external DLLs in BYOND, simply use the ``call()()`` proc. For example:
 
 ### What about Linux?
 
-I can't see why you wouldn't be able to change the targeted output to be for linux, should be possible as .NET is cross-platform without issue.
+I can't see why you wouldn't be able to change the targeted output to be for linux, should be possible as .NET is cross-platform without issue. Just make sure you change the ``RuntimeIdentifier`` attribute in the ``.csproj`` files for ByondSharp during compilation, this will produce library files compatible with other runtimes.

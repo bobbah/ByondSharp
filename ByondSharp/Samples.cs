@@ -1,5 +1,7 @@
 ﻿using ByondSharp.FFI;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ByondSharp
 {
@@ -24,6 +26,17 @@ namespace ByondSharp
         public static string DoNothingButReturnString()
         {
             return "You did it!";
+        }
+
+        [ByondFFI]
+        public static async Task<string> GetBYONDUserAsync(List<string> args)
+        {
+            if (args.Count == 0)
+                return null;
+
+            var ds = new BYONDDataService();
+            var data = await ds.GetUserData(args[0], CancellationToken.None);
+            return $"CKey: {data.CKey} -- Key: {data.Key} -- Joined: {data.Joined} -- Is member: {data.IsMember} -- Gender: {data.Gender}";
         }
     }
 }

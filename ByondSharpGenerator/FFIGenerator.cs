@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -19,7 +20,7 @@ namespace ByondSharpGenerator
                                                                                                 isEnabledByDefault: true);
         private static readonly DiagnosticDescriptor InvalidReturnTypeError = new DiagnosticDescriptor(id: "BSFFIGEN002",
                                                                                                 title: "Invalid return type for exported method",
-                                                                                                messageFormat: "Method '{0}' must have a return type of string or void to be exported as a FFI for BYOND.",
+                                                                                                messageFormat: "{0} '{1}' must have a return type of {2} to be exported as a FFI for BYOND.",
                                                                                                 category: "ByondSharpGenerator",
                                                                                                 DiagnosticSeverity.Error,
                                                                                                 isEnabledByDefault: true);
@@ -35,6 +36,14 @@ namespace ByondSharpGenerator
                                                                                                 category: "ByondSharpGenerator",
                                                                                                 DiagnosticSeverity.Error,
                                                                                                 isEnabledByDefault: true);
+        private static readonly DiagnosticDescriptor InvalidVisibilityError = new DiagnosticDescriptor(id: "BSFFIGEN005",
+                                                                                        title: "Invalid visibility for exported method",
+                                                                                        messageFormat: "Method '{0}' must be public to be exported as a FFI for BYOND.",
+                                                                                        category: "ByondSharpGenerator",
+                                                                                        DiagnosticSeverity.Error,
+                                                                                        isEnabledByDefault: true);
+        private static readonly List<string> ValidAsyncReturnTypes = new List<string>() { "System.Threading.Tasks.Task<string>", "System.Threading.Tasks.Task" };
+
 
         public void Execute(GeneratorExecutionContext context)
         {
@@ -58,10 +67,20 @@ namespace ByondSharpGenerator
                         continue;
                     }
 
-                    // Check for valid return type
-                    if (!methodSym.ReturnsVoid && methodSym.ReturnType.ToDisplayString() != "string")
+                    // Next we also need to validate it is public
+                    if (!method.Modifiers.Any(modifier => modifier.Kind() == SyntaxKind.PublicKeyword))
                     {
-                        context.ReportDiagnostic(Diagnostic.Create(InvalidReturnTypeError, method.GetLocation(), new[] { methodSym.Name }));
+                        context.ReportDiagnostic(Diagnostic.Create(InvalidVisibilityError, method.GetLocation(), new[] { methodSym.Name }));
+                        continue;
+                    }
+
+                    // Check for valid return type, validate the async return type when relevant
+                    if (!methodSym.ReturnsVoid && (
+                        (!methodSym.IsAsync && methodSym.ReturnType.ToDisplayString() != "string") 
+                        || (methodSym.IsAsync && !ValidAsyncReturnTypes.Contains(methodSym.ReturnType.ToDisplayString()))))
+                    {
+
+                        context.ReportDiagnostic(Diagnostic.Create(InvalidReturnTypeError, method.ReturnType.GetLocation(), new[] { methodSym.Name, methodSym.IsAsync ? "Task<string> or Task" : "string or void" }));
                         continue;
                     }
 
@@ -104,6 +123,8 @@ using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 ");
 
             source.Append($@"
@@ -114,9 +135,10 @@ namespace ByondSharp
 
             foreach (var method in methods)
             {
+                string methodReturn = method.ReturnsVoid || method.IsAsync && method.ReturnType.ToDisplayString() == "Task" ? "void" : "IntPtr";
                 source.Append($@"
         [UnmanagedCallersOnly(CallConvs = new[] {{ typeof(CallConvCdecl) }}, EntryPoint = ""{method.Name}"")]
-        public static {(method.ReturnsVoid ? "void" : "IntPtr")} {method.Name}__FFIWrapper(int numArgs, IntPtr argPtr)
+        public static {methodReturn} {method.Name}__FFIWrapper(int numArgs, IntPtr argPtr)
         {{");
                 if (!method.Parameters.IsEmpty)
                 {
@@ -128,27 +150,37 @@ namespace ByondSharp
             for (var x = 0; x < numArgs; x++)
             {{
                 args[x] = Marshal.PtrToStringUTF8(argPtrs[x]);
-            }}");
-                }
-
-
-                if (!method.ReturnsVoid)
-                {
-                    source.Append($@"
-            return ByondSharp.FFI.ByondFFI.FFIReturn({method.ContainingSymbol.ToDisplayString()}.{method.Name}({(method.Parameters.IsEmpty ? "" : "args.ToList()")}));");
-                }
-                else
-                {
-                    source.Append($@"
-            {method.ContainingSymbol.ToDisplayString()}.{method.Name}({(method.Parameters.IsEmpty ? "" : "args.ToList()")});");
+            }}
+");
                 }
 
                 source.Append(@"
-        }
-");
+            // Begin calling actual method
+            try 
+            {");
+
+                var methodCall = new StringBuilder();
+                if (methodReturn != "void")
+                    methodCall.Append("return ByondSharp.FFI.ByondFFI.FFIReturn(");
+                methodCall.Append($"{method.ContainingSymbol.ToDisplayString()}.{method.Name}({(method.Parameters.IsEmpty ? "" : "args.ToList()")})");
+                if (method.IsAsync)
+                    methodCall.Append(".GetAwaiter().GetResult()");
+                if (methodReturn != "void")
+                    methodCall.Append(")");
+                methodCall.Append(";");
+
+                source.Append($@"
+                {methodCall}
+            }}
+            catch ({(methodReturn != "void" ? "Exception ex" : "Exception")})
+            {{
+                {(methodReturn != "void" ? "return ByondSharp.FFI.ByondFFI.FFIReturn(ex.ToString());" : "// As this doesn't expect a value back, we cannot report the runtime")}
+            }}
+        }}");
             }
 
-            source.Append(@"    }
+            source.Append(@"
+    }
 }");
 
             return source.ToString();
