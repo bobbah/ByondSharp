@@ -75,6 +75,7 @@ All other files can be discarded, but these three __must__ be present in a direc
 To use external DLLs in BYOND, simply use the ``call()()`` proc. For example:
 
 ```dm
+#define byondsharp_repeatme(options)			call("byondsharpNE", "RepeatMe")(options)
 #define byondsharp_startstopwatch(options)		call("byondsharpNE", "StartStopwatch")(options)
 #define byondsharp_getstopwatchstatus(options)	call("byondsharpNE", "GetStopwatchStatus")(options)
 
