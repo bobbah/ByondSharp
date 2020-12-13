@@ -57,6 +57,10 @@ namespace ByondSharp
 }
 ```
 
+### Deferrable Behaviour
+
+Using the ByondSharp solution, it is possible to add the ``Deferrable`` boolean named argument to any ``ByondFFIAttribute`` on an async method. This will generate an additional version of the method's export, with ``Deferred`` added as a suffix to the method's name. If the method has a return value, the deferred method will return a ``ulong`` id, which is an internal scheduled id for this job. You can then poll the ``TaskManager`` using the ``PollJobs`` exported function to get a semicolon separated list of completed jobs. Once the job appears in this list, you can retrieve the result and remove it from the task manager by calling the ``GetResult`` exported function, with the job id as the only argument. By doing this you accomplish two things: you can run tasks on multiple threads, as is the default behaviour of async tasks, and as well as this you can avoid blocking BYOND's thread waiting for a result from this external call.
+
 ### How to build
 
 Knowing how to run it and the brief rules for writing code is not very useful without being able to build the library, so how is it done?

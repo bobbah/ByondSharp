@@ -28,7 +28,7 @@ namespace ByondSharp
             return "You did it!";
         }
 
-        [ByondFFI]
+        [ByondFFI(Deferrable = true)]
         public static async Task<string> GetBYONDUserAsync(List<string> args)
         {
             if (args.Count == 0)

@@ -42,8 +42,13 @@ namespace ByondSharpGenerator
                                                                                         category: "ByondSharpGenerator",
                                                                                         DiagnosticSeverity.Error,
                                                                                         isEnabledByDefault: true);
+        private static readonly DiagnosticDescriptor CannotDeferSyncMethod = new DiagnosticDescriptor(id: "BSFFIGEN006",
+                                                                                title: "Cannot defer synchronous method",
+                                                                                messageFormat: "Method '{0}' must be async to be exported as a deferrable FFI for BYOND.",
+                                                                                category: "ByondSharpGenerator",
+                                                                                DiagnosticSeverity.Error,
+                                                                                isEnabledByDefault: true);
         private static readonly List<string> ValidAsyncReturnTypes = new List<string>() { "System.Threading.Tasks.Task<string>", "System.Threading.Tasks.Task" };
-
 
         public void Execute(GeneratorExecutionContext context)
         {
@@ -101,13 +106,21 @@ namespace ByondSharpGenerator
                         }
                     }
 
+                    // Check for async if this is a deferrable method
+                    var attr = methodSym.GetAttributes().First(x => x.AttributeClass.Equals(attrSymbol, SymbolEqualityComparer.Default));
+                    if (attr.NamedArguments.Length > 0 && (bool)attr.NamedArguments.First(x => x.Key == "Deferrable").Value.Value && !methodSym.IsAsync)
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(CannotDeferSyncMethod, method.GetLocation(), new[] { methodSym.Name }));
+                        continue;
+                    }
+
                     // Add the symbol if it passes all these checks
                     symbols.Add(model.GetDeclaredSymbol(method));
                 }
             }
 
             // Generate additional source code, and add to the compiler
-            var source = ProcessMethods(symbols);
+            var source = ProcessMethods(symbols, context);
             context.AddSource("FFIExports_auto.cs", SourceText.From(source, Encoding.UTF8));
         }
 
@@ -116,8 +129,9 @@ namespace ByondSharpGenerator
         /// </summary>
         /// <param name="methods">The methods to wrap</param>
         /// <returns>The generated source code, including wrappers</returns>
-        private static string ProcessMethods(List<IMethodSymbol> methods)
+        private static string ProcessMethods(List<IMethodSymbol> methods, GeneratorExecutionContext context)
         {
+            INamedTypeSymbol attrSymbol = context.Compilation.GetTypeByMetadataName("ByondSharp.FFI.ByondFFIAttribute");
             var source = new StringBuilder($@"
 using System;
 using System.Linq;
@@ -135,6 +149,12 @@ namespace ByondSharp
 
             foreach (var method in methods)
             {
+                var attribute = method.GetAttributes().First(x => x.AttributeClass.Equals(attrSymbol, SymbolEqualityComparer.Default));
+                if (attribute.NamedArguments.Length > 0 && (bool)attribute.NamedArguments.First(x => x.Key == "Deferrable").Value.Value)
+                {
+                    GenerateDeferralMethod(method, source);
+                }
+
                 string methodReturn = method.ReturnsVoid || method.IsAsync && method.ReturnType.ToDisplayString() == "Task" ? "void" : "IntPtr";
                 source.Append($@"
         [UnmanagedCallersOnly(CallConvs = new[] {{ typeof(CallConvCdecl) }}, EntryPoint = ""{method.Name}"")]
@@ -184,6 +204,52 @@ namespace ByondSharp
 }");
 
             return source.ToString();
+        }
+
+        private static void GenerateDeferralMethod(IMethodSymbol method, StringBuilder source)
+        {
+            string methodReturn = method.ReturnsVoid || method.IsAsync && method.ReturnType.ToDisplayString() == "Task" ? "void" : "IntPtr";
+            source.Append($@"
+        [UnmanagedCallersOnly(CallConvs = new[] {{ typeof(CallConvCdecl) }}, EntryPoint = ""{method.Name}Deferred"")]
+        public static {methodReturn} {method.Name}__FFIWrapperDeferred(int numArgs, IntPtr argPtr)
+        {{");
+            if (!method.Parameters.IsEmpty)
+            {
+                source.Append($@"
+            // Boilerplate to get data passed
+            string[] args = new string[numArgs];
+            IntPtr[] argPtrs = new IntPtr[numArgs];
+            Marshal.Copy(argPtr, argPtrs, 0, numArgs);
+            for (var x = 0; x < numArgs; x++)
+            {{
+                args[x] = Marshal.PtrToStringUTF8(argPtrs[x]);
+            }}
+");
+            }
+
+            source.Append(@"
+            // Begin calling actual method
+            try 
+            {");
+
+            var methodCall = new StringBuilder();
+            if (methodReturn != "void")
+                methodCall.Append("return ByondSharp.FFI.ByondFFI.FFIReturn(ByondSharp.Deferred.TaskManager.RunTask(");
+            methodCall.Append($"{method.ContainingSymbol.ToDisplayString()}.{method.Name}({(method.Parameters.IsEmpty ? "" : "args.ToList()")})");
+            if (methodReturn == "void")
+                methodCall.Append(".Start()");
+            if (methodReturn != "void")
+                methodCall.Append(").ToString())");
+            methodCall.Append(";");
+
+            source.Append($@"
+                {methodCall}
+            }}
+            catch ({(methodReturn != "void" ? "Exception ex" : "Exception")})
+            {{
+                {(methodReturn != "void" ? "return ByondSharp.FFI.ByondFFI.FFIReturn(ex.ToString());" : "// As this doesn't expect a value back, we cannot report the runtime")}
+            }}
+        }}");
         }
 
         public void Initialize(GeneratorInitializationContext context)

@@ -10,3 +10,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("MicrosoftCodeAnalysisReleaseTracking", "RS2008:Enable analyzer release tracking", Justification = "<Pending>", Scope = "member", Target = "~F:ByondSharpGenerator.FFIGenerator.TooManyParametersError")]
 [assembly: SuppressMessage("MicrosoftCodeAnalysisReleaseTracking", "RS2008:Enable analyzer release tracking", Justification = "<Pending>", Scope = "member", Target = "~F:ByondSharpGenerator.FFIGenerator.InvalidParameterError")]
 [assembly: SuppressMessage("MicrosoftCodeAnalysisReleaseTracking", "RS2008:Enable analyzer release tracking", Justification = "<Pending>", Scope = "member", Target = "~F:ByondSharpGenerator.FFIGenerator.InvalidVisibilityError")]
+[assembly: SuppressMessage("MicrosoftCodeAnalysisReleaseTracking", "RS2008:Enable analyzer release tracking", Justification = "<Pending>", Scope = "member", Target = "~F:ByondSharpGenerator.FFIGenerator.CannotDeferSyncMethod")]
