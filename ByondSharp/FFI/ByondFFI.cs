@@ -31,5 +31,10 @@ namespace ByondSharp.FFI
             _returnString = Marshal.StringToHGlobalAnsi(s);
             return _returnString;
         }
+
+        public static IntPtr FFIReturn(ByondResponse response)
+        {
+            return FFIReturn(response.ToString());
+        }
     }
 }

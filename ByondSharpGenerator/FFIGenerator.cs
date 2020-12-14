@@ -181,12 +181,12 @@ namespace ByondSharp
 
                 var methodCall = new StringBuilder();
                 if (methodReturn != "void")
-                    methodCall.Append("return ByondSharp.FFI.ByondFFI.FFIReturn(");
+                    methodCall.Append("return ByondSharp.FFI.ByondFFI.FFIReturn(new ByondSharp.FFI.ByondResponse() { ResponseCode = ByondSharp.FFI.ResponseCode.Success, Data = ");
                 methodCall.Append($"{method.ContainingSymbol.ToDisplayString()}.{method.Name}({(method.Parameters.IsEmpty ? "" : "args.ToList()")})");
                 if (method.IsAsync)
                     methodCall.Append(".GetAwaiter().GetResult()");
                 if (methodReturn != "void")
-                    methodCall.Append(")");
+                    methodCall.Append(" })");
                 methodCall.Append(";");
 
                 source.Append($@"
@@ -194,7 +194,7 @@ namespace ByondSharp
             }}
             catch ({(methodReturn != "void" ? "Exception ex" : "Exception")})
             {{
-                {(methodReturn != "void" ? "return ByondSharp.FFI.ByondFFI.FFIReturn(ex.ToString());" : "// As this doesn't expect a value back, we cannot report the runtime")}
+                {(methodReturn != "void" ? "return ByondSharp.FFI.ByondFFI.FFIReturn(new ByondSharp.FFI.ByondResponse() { ResponseCode = ByondSharp.FFI.ResponseCode.Error, _Exception = ex });" : "// As this doesn't expect a value back, we cannot report the runtime")}
             }}
         }}");
             }
@@ -234,12 +234,12 @@ namespace ByondSharp
 
             var methodCall = new StringBuilder();
             if (methodReturn != "void")
-                methodCall.Append("return ByondSharp.FFI.ByondFFI.FFIReturn(ByondSharp.Deferred.TaskManager.RunTask(");
+                methodCall.Append("return ByondSharp.FFI.ByondFFI.FFIReturn(new ByondSharp.FFI.ByondResponse() { ResponseCode = ByondSharp.FFI.ResponseCode.Deferred, Data = ByondSharp.Deferred.TaskManager.RunTask(");
             methodCall.Append($"{method.ContainingSymbol.ToDisplayString()}.{method.Name}({(method.Parameters.IsEmpty ? "" : "args.ToList()")})");
             if (methodReturn == "void")
                 methodCall.Append(".Start()");
             if (methodReturn != "void")
-                methodCall.Append(").ToString())");
+                methodCall.Append(").ToString() })");
             methodCall.Append(";");
 
             source.Append($@"
@@ -247,7 +247,7 @@ namespace ByondSharp
             }}
             catch ({(methodReturn != "void" ? "Exception ex" : "Exception")})
             {{
-                {(methodReturn != "void" ? "return ByondSharp.FFI.ByondFFI.FFIReturn(ex.ToString());" : "// As this doesn't expect a value back, we cannot report the runtime")}
+                {(methodReturn != "void" ? "return ByondSharp.FFI.ByondFFI.FFIReturn(new ByondSharp.FFI.ByondResponse() { ResponseCode = ByondSharp.FFI.ResponseCode.Error, _Exception = ex });" : "// As this doesn't expect a value back, we cannot report the runtime")}
             }}
         }}");
         }
