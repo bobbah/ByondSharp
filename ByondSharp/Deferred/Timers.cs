@@ -61,7 +61,7 @@ namespace ByondSharp.Deferred
                 result.Add(timer);
             }
                 
-            return string.Join(";", result.Select(x => $"{x.ID}|{x.Callback}"));
+            return string.Join(";", result.Select(x => $"{(x.Flags.HasFlag(TimerFlag.Loop) ? 0 : x.ID)}|{x.Callback}"));
         }
 
         [ByondFFI]
