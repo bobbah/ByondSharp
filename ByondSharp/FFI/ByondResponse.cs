@@ -24,7 +24,7 @@ namespace ByondSharp.FFI
         [JsonIgnore]
         public Exception _Exception;
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string Exception => _Exception != null ? _Exception.ToString() : null;
+        public string Exception => _Exception?.ToString();
         public string Data;
 
         public override string ToString()

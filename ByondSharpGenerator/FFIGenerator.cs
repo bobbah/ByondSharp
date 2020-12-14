@@ -170,6 +170,8 @@ namespace ByondSharp
             for (var x = 0; x < numArgs; x++)
             {{
                 args[x] = Marshal.PtrToStringUTF8(argPtrs[x]);
+                if (args[x].Length == 0)
+                    args[x] = null;
             }}
 ");
                 }
@@ -223,6 +225,8 @@ namespace ByondSharp
             for (var x = 0; x < numArgs; x++)
             {{
                 args[x] = Marshal.PtrToStringUTF8(argPtrs[x]);
+                if (args[x].Length == 0)
+                    args[x] = null;
             }}
 ");
             }
