@@ -61,7 +61,7 @@ namespace ByondSharp.Deferred
                 result.Add(timer);
             }
                 
-            return string.Join(";", result.Select(x => $"{(x.Flags.HasFlag(TimerFlag.Loop) ? 0 : x.ID)}|{x.Callback}"));
+            return string.Join(";", result.Select(x => $"{(x.Flags.HasFlag(TimerFlag.Loop) ? "-" : "")}{x.ID}"));
         }
 
         [ByondFFI]
@@ -125,7 +125,7 @@ namespace ByondSharp.Deferred
                 timer.ID = Interlocked.Increment(ref _currentId);
             }
 
-            return $"{timer.ID}{(deletedCallback != null ? $"|{deletedCallback}" : "")}";
+            return $"{timer.ID}";
         }
 
         [ByondFFI]
@@ -136,14 +136,14 @@ namespace ByondSharp.Deferred
             if (timer != null)
             {
                 _timers.Remove(timer);
-                return $"{timer.ID}|{timer.Callback}";
+                return $"{timer.ID}";
             }
 
             var rwt = _realtimeTimers.FirstOrDefault(x => x.ID == id && x.Flags.HasFlag(TimerFlag.Stoppable));
             if (rwt != null)
             {
                 _realtimeTimers.Remove(rwt);
-                return $"{rwt.ID}|{rwt.Callback}";
+                return $"{rwt.ID}";
             }
 
             return null;
@@ -156,14 +156,14 @@ namespace ByondSharp.Deferred
             if (timer != null)
             {
                 _timers.Remove(timer);
-                return "1";
+                return $"{timer.ID}";
             }
 
             var rwt = _realtimeTimers.FirstOrDefault(x => x.Hash == args[0] && x.Flags.HasFlag(TimerFlag.Stoppable));
             if (rwt != null)
             {
                 _realtimeTimers.Remove(rwt);
-                return "1";
+                return $"{rwt.ID}";
             }
 
             return null;
@@ -197,14 +197,14 @@ namespace ByondSharp.Deferred
             if (timer != null)
             {
                 _timers.Remove(timer);
-                return $"{timer.ID}|{timer.Callback}";
+                return $"{timer.ID}";
             }
 
             var rwt = _realtimeTimers.FirstOrDefault(x => x.ID == id);
             if (rwt != null)
             {
                 _realtimeTimers.Remove(rwt);
-                return $"{rwt.ID}|{rwt.Callback}";
+                return $"{rwt.ID}";
             }
 
             return null;
