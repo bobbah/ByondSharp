@@ -1,4 +1,5 @@
 ﻿// Taken from https://github.com/sphinxy/DataStructures/blob/35f41dcb29e5ee6d2217fc5ae4525f0990a6be0a/DataStructures/PriorityQueue.cs
+// With some modifications also added by https://github.com/space-wizards/RobustToolbox/blob/b8e5b47e7abced7cbb87cd5c460ef7bd9a91c69a/Robust.Shared/Utility/PriorityQueue.cs
 
 /*
 The MIT License (MIT)
@@ -44,14 +45,13 @@ namespace ByondSharp.Util
 
         private int _shrinkBound;
 
-        // ReSharper disable once StaticFieldInGenericType
         private static readonly InvalidOperationException EmptyCollectionException = new("Collection is empty.");
 
         /// <summary>
         /// Create a max-priority queue with default capacity of 10.
         /// </summary>
         /// <param name="comparer">Custom comparer to compare elements. If omitted - default will be used.</param>
-        public PriorityQueue(IComparer<T>? comparer = null) : this(DEFAULT_CAPACITY, comparer) { }
+        public PriorityQueue(IComparer<T> comparer = null) : this(DEFAULT_CAPACITY, comparer) { }
 
         /// <summary>
         /// Create a max-priority queue with provided capacity.
@@ -60,7 +60,7 @@ namespace ByondSharp.Util
         /// <param name="comparer">Custom comparer to compare elements. If omitted - default will be used.</param>
         /// <exception cref="ArgumentOutOfRangeException">Throws <see cref="ArgumentOutOfRangeException"/> when capacity is less than or equal to zero.</exception>
         /// <exception cref="ArgumentException">Throws <see cref="ArgumentException"/> when comparer is null and <typeparamref name="T"/> does not implement IComparable.</exception>
-        public PriorityQueue(int capacity, IComparer<T>? comparer = null)
+        public PriorityQueue(int capacity, IComparer<T> comparer = null)
         {
             if (capacity <= 0) throw new ArgumentOutOfRangeException(nameof(capacity), "Expected capacity greater than zero.");
 
