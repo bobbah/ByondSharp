@@ -91,4 +91,4 @@ To use external DLLs in BYOND, simply use the ``call()()`` proc. For example:
 
 ### What about Linux?
 
-I can't see why you wouldn't be able to change the targeted output to be for linux, should be possible as .NET is cross-platform without issue. Just make sure you change the ``RuntimeIdentifier`` attribute in the ``.csproj`` files for ByondSharp during compilation, this will produce library files compatible with other runtimes.
+Unfortunately .NET currently does not target x86 linux ([see this issue for progress on that](https://github.com/dotnet/runtime/issues/7335)), so this package can't be used for linux deployments until a time that it does, or that Lummox releases a 64-bit BYOND. Thanks to Nopm for helping me figure that out.
