@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DNNE" Version="1.0.17" />
-    <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="6.1.1" />
-    <PackageReference Include="RestSharp" Version="106.11.7" />
+    <PackageReference Include="DNNE" Version="1.0.22" />
+    <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="7.0.2" />
+    <PackageReference Include="RestSharp" Version="106.12.0" />
   </ItemGroup>
 
   <ItemGroup>
