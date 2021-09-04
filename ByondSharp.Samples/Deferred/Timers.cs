@@ -1,5 +1,5 @@
 using ByondSharp.FFI;
-using ByondSharp.Util;
+using ByondSharp.Samples.Util;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ByondSharp.Deferred
+namespace ByondSharp.Samples.Deferred
 {
     /// <summary>
     /// Flags for timers from /tg/station codebase

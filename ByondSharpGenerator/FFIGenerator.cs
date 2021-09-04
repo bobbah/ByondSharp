@@ -155,7 +155,7 @@ namespace ByondSharp
                     GenerateDeferralMethod(method, source);
                 }
 
-                string methodReturn = method.ReturnsVoid || method.IsAsync && method.ReturnType.ToDisplayString() == "Task" ? "void" : "IntPtr";
+                string methodReturn = method.ReturnsVoid || method.IsAsync && method.ReturnType.ToDisplayString() == "System.Threading.Tasks.Task" ? "void" : "IntPtr";
                 source.Append($@"
         [UnmanagedCallersOnly(CallConvs = new[] {{ typeof(CallConvCdecl) }}, EntryPoint = ""{method.Name}"")]
         public static {methodReturn} {method.Name}__FFIWrapper(int numArgs, IntPtr argPtr)

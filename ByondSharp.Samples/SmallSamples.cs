@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ByondSharp
+namespace ByondSharp.Samples
 {
     /// <summary>
     /// Brief examples for use of ByondSharp.
     /// </summary>
-    public class Samples
+    public class SmallSamples
     {
         [ByondFFI]
         public static string RepeatMe(List<string> args)

@@ -9,13 +9,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Discord.Net" Version="2.4.0" />
     <PackageReference Include="DNNE" Version="1.0.22" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
+    <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="7.0.2" />
+    <PackageReference Include="RestSharp" Version="106.12.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ByondSharpGenerator\ByondSharpGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\ByondSharp\ByondSharp.csproj" />
   </ItemGroup>
- 
+
   <Target Name="MoveBYONDFiles" AfterTargets="Build">
     <ItemGroup>
       <DllFiles Include="$(OutDir)\*.dll" />

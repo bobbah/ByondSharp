@@ -1,11 +1,11 @@
 ﻿using RestSharp;
-using ByondSharp.Models;
+using ByondSharp.Samples.Models;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Toolkit.HighPerformance;
 
-namespace ByondSharp
+namespace ByondSharp.Samples
 {
     /// <summary>
     /// This is provided as an example for external library use, with RestSharp, as well as an async method call. This is a sample adapted from the Scrubby parsing server.

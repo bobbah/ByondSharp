@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ByondSharp.Models
+namespace ByondSharp.Samples.Models
 {
     public class BYONDUserData
     {

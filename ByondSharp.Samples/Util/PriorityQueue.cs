@@ -26,7 +26,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace ByondSharp.Util
+namespace ByondSharp.Samples.Util
 {
     /// <summary>
     /// Heap-based resizable max-priority queue.
