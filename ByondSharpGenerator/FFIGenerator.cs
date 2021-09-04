@@ -14,37 +14,37 @@ namespace ByondSharpGenerator
     {
         private static readonly DiagnosticDescriptor NonStaticMethodError = new DiagnosticDescriptor(id: "BSFFIGEN001",
                                                                                                 title: "Exported method must be static",
-                                                                                                messageFormat: "Method '{0}' must be static to be exported as a FFI for BYOND.",
+                                                                                                messageFormat: "Method '{0}' must be static to be exported as a FFI for BYOND",
                                                                                                 category: "ByondSharpGenerator",
                                                                                                 DiagnosticSeverity.Error,
                                                                                                 isEnabledByDefault: true);
         private static readonly DiagnosticDescriptor InvalidReturnTypeError = new DiagnosticDescriptor(id: "BSFFIGEN002",
                                                                                                 title: "Invalid return type for exported method",
-                                                                                                messageFormat: "{0} '{1}' must have a return type of {2} to be exported as a FFI for BYOND.",
+                                                                                                messageFormat: "{0} '{1}' must have a return type of {2} to be exported as a FFI for BYOND",
                                                                                                 category: "ByondSharpGenerator",
                                                                                                 DiagnosticSeverity.Error,
                                                                                                 isEnabledByDefault: true);
         private static readonly DiagnosticDescriptor TooManyParametersError = new DiagnosticDescriptor(id: "BSFFIGEN003",
                                                                                                 title: "Too many parameters provided for exported method",
-                                                                                                messageFormat: "Method '{0}' must have zero or one arguments to be exported as a FFI for BYOND.",
+                                                                                                messageFormat: "Method '{0}' must have zero or one arguments to be exported as a FFI for BYOND",
                                                                                                 category: "ByondSharpGenerator",
                                                                                                 DiagnosticSeverity.Error,
                                                                                                 isEnabledByDefault: true);
         private static readonly DiagnosticDescriptor InvalidParameterError = new DiagnosticDescriptor(id: "BSFFIGEN004",
                                                                                                 title: "Invalid return type for exported method",
-                                                                                                messageFormat: "Method '{0}' must have no arguments or a single argument of List<string> to be exported as a FFI for BYOND.",
+                                                                                                messageFormat: "Method '{0}' must have no arguments or a single argument of List<string> to be exported as a FFI for BYOND",
                                                                                                 category: "ByondSharpGenerator",
                                                                                                 DiagnosticSeverity.Error,
                                                                                                 isEnabledByDefault: true);
         private static readonly DiagnosticDescriptor InvalidVisibilityError = new DiagnosticDescriptor(id: "BSFFIGEN005",
                                                                                         title: "Invalid visibility for exported method",
-                                                                                        messageFormat: "Method '{0}' must be public to be exported as a FFI for BYOND.",
+                                                                                        messageFormat: "Method '{0}' must be public to be exported as a FFI for BYOND",
                                                                                         category: "ByondSharpGenerator",
                                                                                         DiagnosticSeverity.Error,
                                                                                         isEnabledByDefault: true);
         private static readonly DiagnosticDescriptor CannotDeferSyncMethod = new DiagnosticDescriptor(id: "BSFFIGEN006",
                                                                                 title: "Cannot defer synchronous method",
-                                                                                messageFormat: "Method '{0}' must be async to be exported as a deferrable FFI for BYOND.",
+                                                                                messageFormat: "Method '{0}' must be async to be exported as a deferrable FFI for BYOND",
                                                                                 category: "ByondSharpGenerator",
                                                                                 DiagnosticSeverity.Error,
                                                                                 isEnabledByDefault: true);
@@ -155,7 +155,7 @@ namespace ByondSharp
                     GenerateDeferralMethod(method, source);
                 }
 
-                string methodReturn = method.ReturnsVoid || method.IsAsync && method.ReturnType.ToDisplayString() == "Task" ? "void" : "IntPtr";
+                string methodReturn = method.ReturnsVoid || method.IsAsync && method.ReturnType.ToDisplayString() == "System.Threading.Tasks.Task" ? "void" : "IntPtr";
                 source.Append($@"
         [UnmanagedCallersOnly(CallConvs = new[] {{ typeof(CallConvCdecl) }}, EntryPoint = ""{method.Name}"")]
         public static {methodReturn} {method.Name}__FFIWrapper(int numArgs, IntPtr argPtr)

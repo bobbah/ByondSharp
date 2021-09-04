@@ -22,7 +22,7 @@ namespace ByondSharp.FFI
         /// <param name="s">The string to be returned to BYOND</param>
         /// <returns>A pointer to the location of the c string in the heap</returns>
         /// <remarks>This MUST be properly freed else it will create a memory leak</remarks>
-        public static IntPtr FFIReturn(string s)
+        private static IntPtr FFIReturn(string s)
         {
             if (_returnString != IntPtr.Zero)
             {

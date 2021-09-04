@@ -1,7 +1,7 @@
 ﻿using ByondSharp.FFI;
 using System.Diagnostics;
 
-namespace ByondSharp
+namespace ByondSharp.Samples
 {
     /// <summary>
     /// Stateful example of operations possible with ByondSharp. With these two calls, one can maintain 

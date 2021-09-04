@@ -1,14 +1,11 @@
 ﻿using RestSharp;
-using ByondSharp.Models;
+using ByondSharp.Samples.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Toolkit.HighPerformance.Extensions;
+using Microsoft.Toolkit.HighPerformance;
 
-namespace ByondSharp
+namespace ByondSharp.Samples
 {
     /// <summary>
     /// This is provided as an example for external library use, with RestSharp, as well as an async method call. This is a sample adapted from the Scrubby parsing server.
@@ -16,7 +13,7 @@ namespace ByondSharp
     public class BYONDDataService
     {
         const string BaseURL = "https://www.byond.com/";
-        readonly IRestClient _client;
+        private readonly IRestClient _client;
 
         public BYONDDataService()
         {

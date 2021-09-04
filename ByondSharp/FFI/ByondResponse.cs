@@ -18,7 +18,7 @@ namespace ByondSharp.FFI
 
     public struct ByondResponse
     {
-        private static readonly JsonSerializerOptions _jsonSerializerConfig = new JsonSerializerOptions() { IncludeFields = true };
+        private static readonly JsonSerializerOptions JsonSerializerConfig = new JsonSerializerOptions() { IncludeFields = true };
 
         public ResponseCode ResponseCode;
         [JsonIgnore]
@@ -29,7 +29,7 @@ namespace ByondSharp.FFI
 
         public override string ToString()
         {
-            return JsonSerializer.Serialize(this, _jsonSerializerConfig);
+            return JsonSerializer.Serialize(this, JsonSerializerConfig);
         }
     }
 }

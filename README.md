@@ -23,6 +23,8 @@ At a bare minimum, exported functions must:
 
 Aside from that you're free to do as you please.
 
+I would highly recommend using the content of the ByondSharp project as the basis for your own project. By not doing this you may miss out on the functionality of the ``TaskManager``. The code included in the sample project (``ByondSharp.Samples``), are just samples and can be ignored.
+
 See below for the timer sample as a point of reference.
 
 ```csharp
