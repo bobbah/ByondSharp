@@ -13,7 +13,7 @@ Important things you will need to run ByondSharp in BYOND:
 
 That's it. Really.
 
-Once you have .NET 5.0 or greater runtimes, writing the code is pretty straight forward. I would recommend looking at the [samples](https://github.com/bobbahbrown/ByondSharp/blob/master/ByondSharp/Samples.cs), especially the [timer sample](https://github.com/bobbahbrown/ByondSharp/blob/master/ByondSharp/TimerSample.cs), for an essential introduction to the format of these functions.
+Once you have .NET 5.0 or greater runtimes, writing the code is pretty straight forward. I would recommend looking at the [samples](https://github.com/bobbahbrown/ByondSharp/blob/master/ByondSharp.Samples), especially the [timer sample](https://github.com/bobbahbrown/ByondSharp/blob/master/ByondSharp.Samples/Deferred/Timers.cs), for an essential introduction to the format of these functions.
 
 At a bare minimum, exported functions must:
 - Have the ``ByondFFI`` attribute
