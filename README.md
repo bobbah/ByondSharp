@@ -28,33 +28,32 @@ I would highly recommend using the content of the ByondSharp project as the basi
 See below for the timer sample as a point of reference.
 
 ```csharp
-namespace ByondSharp
+namespace ByondSharp;
+
+/// <summary>
+/// Stateful example of operations possible with ByondSharp. With these two calls, one can maintain 
+/// a stopwatch and keep track of the passing of time.
+/// </summary>
+public class TimerSample
 {
-    /// <summary>
-    /// Stateful example of operations possible with ByondSharp. With these two calls, one can maintain 
-    /// a stopwatch and keep track of the passing of time.
-    /// </summary>
-    public class TimerSample
+    private static Stopwatch _sw;
+
+    [ByondFFI]
+    public static void StartStopwatch()
     {
-        private static Stopwatch _sw;
-
-        [ByondFFI]
-        public static void StartStopwatch()
+        if (_sw is not null)
         {
-            if (_sw is not null)
-            {
-                return;
-            }
-
-            _sw = new Stopwatch();
-            _sw.Start();
+            return;
         }
 
-        [ByondFFI]
-        public static string GetStopwatchStatus()
-        {
-            return _sw.Elapsed.ToString();
-        }
+        _sw = new Stopwatch();
+        _sw.Start();
+    }
+
+    [ByondFFI]
+    public static string GetStopwatchStatus()
+    {
+        return _sw.Elapsed.ToString();
     }
 }
 ```

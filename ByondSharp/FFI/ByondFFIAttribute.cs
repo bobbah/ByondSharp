@@ -1,13 +1,12 @@
 ﻿using System;
 
-namespace ByondSharp.FFI
+namespace ByondSharp.FFI;
+
+/// <summary>
+/// Static methods decorated with this attribute will be compiled into BYOND-callable methods
+/// </summary>
+[AttributeUsage(AttributeTargets.Method)]
+public class ByondFFIAttribute : Attribute 
 {
-    /// <summary>
-    /// Static methods decorated with this attribute will be compiled into BYOND-callable methods
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method)]
-    public class ByondFFIAttribute : Attribute 
-    {
-        public bool Deferrable = false;
-    }
+    public bool Deferrable = false;
 }

@@ -1,35 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
-namespace ByondSharp.FFI
+namespace ByondSharp.FFI;
+
+public enum ResponseCode
 {
-    public enum ResponseCode
-    {
-        Unknown,
-        Success,
-        Error,
-        Deferred
-    }
+    Unknown,
+    Success,
+    Error,
+    Deferred
+}
 
-    public struct ByondResponse
-    {
-        private static readonly JsonSerializerOptions JsonSerializerConfig = new JsonSerializerOptions() { IncludeFields = true };
+public struct ByondResponse
+{
+    private static readonly JsonSerializerOptions JsonSerializerConfig = new JsonSerializerOptions() { IncludeFields = true };
 
-        public ResponseCode ResponseCode;
-        [JsonIgnore]
-        public Exception _Exception;
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string Exception => _Exception?.ToString();
-        public string Data;
+    public ResponseCode ResponseCode;
+    [JsonIgnore]
+    public Exception _Exception;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string Exception => _Exception?.ToString();
+    public string Data;
 
-        public override string ToString()
-        {
-            return JsonSerializer.Serialize(this, JsonSerializerConfig);
-        }
-    }
+    public override string ToString() => JsonSerializer.Serialize(this, JsonSerializerConfig);
 }
