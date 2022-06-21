@@ -1,9 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -57,7 +56,6 @@ namespace ByondSharpGenerator
 
             // Check that each method is actually tagged with ByondFFIAttribute
             INamedTypeSymbol attrSymbol = context.Compilation.GetTypeByMetadataName("ByondSharp.FFI.ByondFFIAttribute");
-            INamedTypeSymbol listSymbol = context.Compilation.GetTypeByMetadataName("System.Collections.Generic.List`1");
             List<IMethodSymbol> symbols = new List<IMethodSymbol>();
             foreach (MethodDeclarationSyntax method in receiver.CandidateFields)
             {
@@ -68,14 +66,14 @@ namespace ByondSharpGenerator
                     // Check the validity of the attribute on this method, first by ensuring it is static
                     if (!methodSym.IsStatic)
                     {
-                        context.ReportDiagnostic(Diagnostic.Create(NonStaticMethodError, method.GetLocation(), new[] { methodSym.Name }));
+                        context.ReportDiagnostic(Diagnostic.Create(NonStaticMethodError, method.GetLocation(), methodSym.Name));
                         continue;
                     }
 
                     // Next we also need to validate it is public
-                    if (!method.Modifiers.Any(modifier => modifier.Kind() == SyntaxKind.PublicKeyword))
+                    if (!method.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.PublicKeyword)))
                     {
-                        context.ReportDiagnostic(Diagnostic.Create(InvalidVisibilityError, method.GetLocation(), new[] { methodSym.Name }));
+                        context.ReportDiagnostic(Diagnostic.Create(InvalidVisibilityError, method.GetLocation(), methodSym.Name));
                         continue;
                     }
 
@@ -85,7 +83,7 @@ namespace ByondSharpGenerator
                         || (methodSym.IsAsync && !ValidAsyncReturnTypes.Contains(methodSym.ReturnType.ToDisplayString()))))
                     {
 
-                        context.ReportDiagnostic(Diagnostic.Create(InvalidReturnTypeError, method.ReturnType.GetLocation(), new[] { methodSym.Name, methodSym.IsAsync ? "Task<string> or Task" : "string or void" }));
+                        context.ReportDiagnostic(Diagnostic.Create(InvalidReturnTypeError, method.ReturnType.GetLocation(), methodSym.Name, methodSym.IsAsync ? "Task<string> or Task" : "string or void"));
                         continue;
                     }
 
@@ -94,14 +92,14 @@ namespace ByondSharpGenerator
                     {
                         if (methodSym.Parameters.Count() > 1)
                         {
-                            context.ReportDiagnostic(Diagnostic.Create(TooManyParametersError, method.GetLocation(), new[] { methodSym.Name }));
+                            context.ReportDiagnostic(Diagnostic.Create(TooManyParametersError, method.GetLocation(), methodSym.Name));
                             continue;
                         }
 
                         // If there is a param present, it needs to be a List<string>
                         if (method.ParameterList.Parameters[0].Type.ToString() != "List<string>")
                         {
-                            context.ReportDiagnostic(Diagnostic.Create(InvalidParameterError, method.GetLocation(), new[] { methodSym.Name }));
+                            context.ReportDiagnostic(Diagnostic.Create(InvalidParameterError, method.GetLocation(), methodSym.Name));
                             continue;
                         }
                     }
@@ -110,7 +108,7 @@ namespace ByondSharpGenerator
                     var attr = methodSym.GetAttributes().First(x => x.AttributeClass.Equals(attrSymbol, SymbolEqualityComparer.Default));
                     if (attr.NamedArguments.Length > 0 && (bool)attr.NamedArguments.First(x => x.Key == "Deferrable").Value.Value && !methodSym.IsAsync)
                     {
-                        context.ReportDiagnostic(Diagnostic.Create(CannotDeferSyncMethod, method.GetLocation(), new[] { methodSym.Name }));
+                        context.ReportDiagnostic(Diagnostic.Create(CannotDeferSyncMethod, method.GetLocation(), methodSym.Name));
                         continue;
                     }
 
@@ -128,6 +126,7 @@ namespace ByondSharpGenerator
         /// Generate wrappers for a collection of methods so that they can be called by BYOND through FFI
         /// </summary>
         /// <param name="methods">The methods to wrap</param>
+        /// <param name="context">The execution context</param>
         /// <returns>The generated source code, including wrappers</returns>
         private static string ProcessMethods(List<IMethodSymbol> methods, GeneratorExecutionContext context)
         {

@@ -13,7 +13,7 @@ namespace ByondSharp.Samples
     public class BYONDDataService
     {
         const string BaseURL = "https://www.byond.com/";
-        private readonly IRestClient _client;
+        private readonly RestClient _client;
 
         public BYONDDataService()
         {
@@ -22,7 +22,7 @@ namespace ByondSharp.Samples
 
         public async Task<BYONDUserData> GetUserData(string key, CancellationToken cancellationToken)
         {
-            var request = new RestRequest($"members/{key}", Method.GET, DataFormat.None).AddQueryParameter("format", "text");
+            var request = new RestRequest($"members/{key}").AddQueryParameter("format", "text");
             var response = await _client.ExecuteAsync(request, cancellationToken);
 
             if (response.StatusCode != System.Net.HttpStatusCode.OK)

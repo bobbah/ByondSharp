@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <Platforms>AnyCPU;x86</Platforms>
     <RuntimeIdentifier>win-x86</RuntimeIdentifier>
@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DNNE" Version="1.0.22" />
+    <PackageReference Include="DNNE" Version="1.0.32" />
   </ItemGroup>
 
   <ItemGroup>

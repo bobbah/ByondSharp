@@ -9,11 +9,11 @@ It abstracts away the complexity of handling FFI with BYOND, and makes it easy f
 ByondSharp works by allowing a developer to write 'normal' C# code, without references to pointers or much consideration for the FFI aspect of their code, and tag their methods they need to export to BYOND with an attribute, ``ByondFFI``. Once tagged the method will be wrapped using source generation and exposed to CDecl calls, making it easily called from BYOND.
 
 Important things you will need to run ByondSharp in BYOND:
-- [.NET 5.0 or greater runtimes](https://dotnet.microsoft.com/download/dotnet/5.0)
+- [.NET 6.0 or greater runtimes](https://dotnet.microsoft.com/download/dotnet/6.0)
 
 That's it. Really.
 
-Once you have .NET 5.0 or greater runtimes, writing the code is pretty straight forward. I would recommend looking at the [samples](https://github.com/bobbahbrown/ByondSharp/blob/master/ByondSharp.Samples), especially the [timer sample](https://github.com/bobbahbrown/ByondSharp/blob/master/ByondSharp.Samples/Deferred/Timers.cs), for an essential introduction to the format of these functions.
+Once you have .NET 6.0 or greater runtimes, writing the code is pretty straight forward. I would recommend looking at the [samples](https://github.com/bobbahbrown/ByondSharp/blob/master/ByondSharp.Samples), especially the [timer sample](https://github.com/bobbahbrown/ByondSharp/blob/master/ByondSharp.Samples/Deferred/Timers.cs), for an essential introduction to the format of these functions.
 
 At a bare minimum, exported functions must:
 - Have the ``ByondFFI`` attribute
@@ -69,7 +69,7 @@ Knowing how to run it and the brief rules for writing code is not very useful wi
 
 Quite simple: in Visual Studio, you will build the ByondSharp project in debug or release configuration **for x86 CPUs** (BYOND is a 32-bit application, a 64-bit compiled DLL will not do much!)
 
-Once this is done, you will generate several files within your ``ByondSharp\bin\x86\[Debug/Release]\net5.0\win-x86\copy_to_byond`` directory. Copy these to the location in which they will be referenced from BYOND. So long as no unanticipated files are generated during compilation (namely non-DLLs) then these should be the only files you require.
+Once this is done, you will generate several files within your ``ByondSharp\bin\x86\[Debug/Release]\net6.0\win-x86\copy_to_byond`` directory. Copy these to the location in which they will be referenced from BYOND. So long as no unanticipated files are generated during compilation (namely non-DLLs) then these should be the only files you require.
 
 All other files generated outside this folder can be discarded, but the aforementioned files __must__ be present in a directory that BYOND can access.
 
