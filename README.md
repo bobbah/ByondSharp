@@ -92,4 +92,6 @@ To use external DLLs in BYOND, simply use the ``call()()`` proc. For example:
 
 ### What about Linux?
 
-Unfortunately .NET currently does not target x86 linux ([see this issue for progress on that](https://github.com/dotnet/runtime/issues/7335)), so this package can't be used for linux deployments until a time that it does, or that Lummox releases a 64-bit BYOND. Thanks to Nopm for helping me figure that out.
+As dotnet does not natively support Linux x86, you'll have to use a patched version of dotnet 6/7.
+
+https://github.com/Servarr/dotnet-linux-x86
